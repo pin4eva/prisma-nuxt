@@ -11,7 +11,9 @@ app.use(express.static("static"));
 
 // Routes
 const user = require("./routes/user");
+const post = require("./routes/post");
 app.use("/api/user", user);
+app.use("/api/post", post);
 
 /**
  *      Nuxt things here
