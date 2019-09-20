@@ -1,0 +1,170 @@
+#Reports
+type Report {
+  id: ID! @id
+  vols: [Vol] #@relation(name: "VolCases")
+  year: Int
+}
+
+#Vol
+type Vol @model {
+  id: ID! @id
+  part_no: Int!
+  cases: [Cases] @relation(name: "VolCases")
+  year: Int!
+  report: Report
+}
+#Categories
+type Category @model {
+  id: ID! @id
+  category: String!
+  desc: String!
+  createdAt: DateTime @createdAt
+  faq: [Faq!]! @relation(name: "CatFaq") #@scalarList(strategy: RELATION)
+  #createdBy: User! @relation(name: CaCreated)
+  #updatedBy: User! @relation(name: CaUpdated)
+}
+
+#Faq
+
+type Question {
+  id: ID! @id
+  qns: String!
+  ans: String!
+}
+
+type Faq implements Category {
+  id: ID! @id
+  title: String!
+  category: Category! @relation(name: "CatFaq")
+  #created: User! #@relation(name: FaCreated)
+  #updated: User! #@relation(name: FaUpdated)
+  createdAt: DateTime @createdAt
+  desc: String!
+  questions: [Question]
+}
+
+#Judges type
+
+type Judge @model {
+  id: ID! @id
+  name: String!
+  title: String!
+  image: String!
+  bio: String!
+  dob: DateTime
+  State: String!
+  ctb: String!
+  education: String!
+  likes: Int @default(value: 0)
+  remark: String!
+  cases: [Cases]! @relation(name: "JudgeCases")
+}
+
+#Cases type
+type Counsel {
+  id: ID! @id
+  appellant: String
+  respondent: String
+}
+type Contents {
+  id: ID! @id
+  quoted: Judge
+  ref: String
+  body: String
+}
+type Ratios {
+  id: ID! @id
+  heading: String
+  contents: Contents
+}
+type Issues implements Cases {
+  id: ID! @id
+  status: String
+  ratios: [Ratios]
+}
+type Cases implements Vol {
+  id: ID! @id
+  title: String!
+  likes: Int
+  appellant: String
+  respondent: String
+  suit_no: String
+  page_no: String
+  State: String
+  cat: String
+  judges: [Judge] @relation(name: "JudgeCases")
+  counsel: Counsel
+  vol: Vol! @relation(name: "VolCases")
+  appeal: String
+  court: String
+  date: DateTime
+  catchwords: String
+  issues: Issues
+  summary: String
+  judgement: String
+  cited: String
+  books_cited: String
+  determinations: String
+}
+
+#User type
+type Location {
+  id: ID! @id
+  town: String
+  state: String
+}
+type Sub implements User {
+  id: ID! @id
+  plan: String #@default( "free")
+  days: Int
+  startedIn: DateTime
+  expiresIn: DateTime
+  isActive: Boolean #@default( false)
+}
+type isActive {
+  id: ID! @id
+  status: Boolean #@default(value: false)
+  activedOn: DateTime
+}
+type User @model {
+  id: ID! @id
+  name: String
+  image: String
+  username: String
+  password: String!
+  firstName: String!
+  lastName: String!
+  phone: String
+  email: String! @unique
+  about: String
+  location: Location
+  company: String
+  tac: Boolean
+  subscription: Sub
+  resetPasswordToken: String
+  resetPasswordExpires: DateTime
+  isAdmin: Boolean #@default(false)
+  emailConfirmationToken: String
+  isActive: isActive
+  joinedDate: DateTime
+  post: [Post] @relation(name: "UserPost")
+}
+
+#Post type
+type Comment implements Post {
+  id: ID! @id
+  body: String
+  createdAt: DateTime @createdAt
+  author: User
+}
+type Post implements User {
+  id: ID! @id
+  title: String
+  category: String
+  body: String
+  image: String
+  desc: String
+  createdAt: DateTime @createdAt
+  author: User! @relation(name: "UserPost")
+  comments: [Comment]
+}
